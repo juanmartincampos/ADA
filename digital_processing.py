@@ -32,7 +32,20 @@ def bp_filter(x, low_f, high_f, samplerate, plot=False):
     low_cutoff_bp = low_f / (samplerate / 2)
     high_cutoff_bp = high_f / (samplerate / 2)
 
-    [b, a] = signal.butter(5, [low_cutoff_bp, high_cutoff_bp], btype='bandpass')
+    [b, a] = signal.cheby1(5, 0.1, [low_cutoff_bp, high_cutoff_bp], btype='bandpass') # should be butter
+
+    '''
+    Plot frequency response to check if the filter is stable
+
+    w, h = signal.freqz(b, a)
+    plt.plot(w, 20 * np.log10(abs(h)))
+    plt.title('Chebyshev Type I frequency response')
+    plt.xlabel('Frequency [radians / second]')
+    plt.ylabel('Amplitude [dB]')
+    plt.margins(0, 0.1)
+    plt.grid(which='both', axis='both')
+    plt.show()
+    '''
 
     x_filt = signal.filtfilt(b, a, x)
 
@@ -59,6 +72,6 @@ def plot_signal(x, samplerate, chname):
 
 
 def denoisewavelet(x1, level=5):
-    xd, cxd, lxd = pyyawt.wden(x1, 'minimaxi', 's', 'mln', level, 'db5')
+    xd, cxd, lxd = pyyawt.wden(x1, 'minimaxi', 'h', 'mln', level, 'db5') # changed from "s" to "h" to avoid spike at low frequencies
     return xd
 
