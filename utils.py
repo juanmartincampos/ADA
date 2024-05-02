@@ -203,3 +203,21 @@ def process_xdf(path):
 
     return l_ear_features_df, r_ear_features_df
 
+def balance_dataset(df):
+    # Pick 70% of the rows with class_label 0
+
+    # Filter the rows where class_label is 0
+    class_0_df = df[df['class_label'] == 0]
+
+    # Randomly sample 70% of these rows
+    class_0_sampled_df = class_0_df.sample(frac=0.3)
+
+    # Filter the rows where class_label is not 0
+    non_class_0_df = df[df['class_label'] != 0]
+
+    # Concatenate the down-sampled class 0 DataFrame with the non-class 0 DataFrame
+    balanced_df = pd.concat([class_0_sampled_df, non_class_0_df])
+
+    # Shuffle the rows of the DataFrame
+    balanced_df = balanced_df.sample(frac=1).reset_index(drop=True)
+    return balanced_df
